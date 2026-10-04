@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+{% block content %}
+  {% if not category and not request.GET.q %}
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="little-dot"></span> Независимый книжный</span>
+        <h1>Ваша следующая<br><em>любимая книга.</em></h1>
+        <p>Для долгих вечеров, новых идей и маленьких открытий.<br class="desktop-only"> Соберите свою полку — мы поможем.</p>
+        <a class="button button-dark" href="#catalog">Выбрать книгу <span>↗</span></a>
+        <span class="hero-note">Листайте. Находите. Влюбляйтесь.</span>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <span class="hero-spark">✳</span>
+        <div class="hero-book book-back"><span>МИР<br>НАЧИНАЕТСЯ<br>С ИДЕИ</span></div>
+        <div class="hero-book book-front"><span class="tiny">КАРЛ САГАН</span><strong>КОСМОС</strong><div class="book-planet"></div><span class="tiny">МЕСТО ДЛЯ ОТКРЫТИЙ</span></div>
+        <div class="hero-sticker">ЕЩЁ<br>ОДНУ<br>ГЛАВУ ↗</div>
+      </div>
+    </section>
+    <div class="store-notes"><span>Книги, к которым возвращаются</span><span>Доставка курьером и самовывоз</span><span>−10% по коду POLKA10</span></div>
+  {% endif %}
+  <section id="catalog" class="catalog-section">
+    <div class="section-heading">
+      <div><span class="eyebrow">Найдётся что почитать</span><h2>{% if request.GET.q %}Результаты поиска{% elif category %}{{ category.name }}{% else %}На нашей полке{% endif %}<sup>{{ page_obj.paginator.count }}</sup></h2></div>
+      <span class="muted desktop-only">Хорошая история всегда рядом.</span>
+    </div>
+    <nav class="category-tabs" aria-label="Категории">
+      <a href="{% url 'shop:product_list' %}" {% if not category %}class="active" aria-current="page"{% endif %}>Все книги</a>
+      {% for item in categories %}<a href="{{ item.get_absolute_url }}" {% if category == item %}class="active" aria-current="page"{% endif %}>{{ item.name }}</a>{% endfor %}
+    </nav>
+    <form class="catalog-filters" method="get">
+      {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+      <div class="price-filter"><label for="id_min_price">Цена, ₽</label><input type="number" id="id_min_price" name="min_price" min="0" step="0.01" placeholder="От" value="{{ filter_form.min_price.value|default_if_none:'' }}"><span>—</span><input type="number" id="id_max_price" name="max_price" min="0" step="0.01" placeholder="До" aria-label="Цена до" value="{{ filter_form.max_price.value|default_if_none:'' }}"></div>
+      <div class="sort-filter"><label class="visually-hidden" for="id_sort">Сортировка</label>{{ filter_form.sort }}<button class="text-button" type="submit">Применить</button></div>
+      {% if request.GET %}<a class="muted reset-link" href="{{ request.path }}">Сбросить</a>{% endif %}
+    </form>
+    {% for errors in filter_form.errors.values %}<p class="field-errors">{{ errors|join:", " }}</p>{% endfor %}
+    <div class="product-grid">
+      {% for product in page_obj %}{% include "shop/includes/product_card.html" %}{% empty %}
+        <div class="empty-state"><h3>На этой полке пока пусто</h3><p>Попробуйте другой запрос или измените фильтры.</p><a class="button button-dark" href="{% url 'shop:product_list' %}">Все книги</a></div>
+      {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+      <nav class="pagination" aria-label="Страницы каталога">
+        {% if page_obj.has_previous %}<a href="?{% query_string page=page_obj.previous_page_number %}">← Назад</a>{% endif %}
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?{% query_string page=page_obj.next_page_number %}">Дальше →</a>{% endif %}
+      </nav>
+    {% endif %}
+  </section>
+{% endblock %}

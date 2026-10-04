@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — Полка{% endblock %}
+{% block content %}
+  <div class="page-heading"><span class="eyebrow">Ваша личная полка</span><h1>Личный кабинет</h1></div>
+  <div class="profile-layout">
+    <aside class="panel profile-card">
+      <span class="profile-avatar">{{ user.username|first|upper }}</span>
+      <h2>{{ user.full_name|default:user.username }}</h2><p class="muted">@{{ user.username }}</p>
+      <p>{{ user.email }}<br>{{ user.phone }}</p>
+      <a class="button button-light full-width" href="{% url 'shop:wishlist' %}">Избранное ♡</a>
+      <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Выйти из аккаунта</button></form>
+    </aside>
+    <section>
+      <h2 class="section-title">История заказов</h2>
+      {% for order in orders %}
+        <article class="panel order-card">
+          <div class="order-card-heading"><div><h3>Заказ №{{ order.pk }}</h3><span class="muted">{{ order.created|date:"d.m.Y" }}</span></div><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></div>
+          {% include "shop/includes/order_items.html" %}
+          <p class="muted small-text">{{ order.get_delivery_method_display }} · {{ order.delivery_date|date:"d.m.Y" }} · {{ order.get_payment_method_display }} · {% if order.paid %}Оплачено{% else %}Не оплачен{% endif %}</p>
+          {% if order.status == "completed" %}<p class="review-invitation">Книги уже у вас. Оставить отзыв можно на странице каждой книги.</p>{% endif %}
+        </article>
+      {% empty %}<div class="panel empty-state"><h3>Первая глава ещё впереди</h3><p>Здесь появятся ваши заказы.</p><a class="button button-dark" href="{% url 'shop:product_list' %}">В каталог</a></div>{% endfor %}
+    </section>
+  </div>
+{% endblock %}

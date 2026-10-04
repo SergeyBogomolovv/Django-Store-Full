@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Вход — Полка{% endblock %}
+{% block content %}
+  <section class="auth-page">
+    <span class="eyebrow">Рады вас видеть</span><h1>С возвращением.</h1><p class="muted">Ваши книги и заказы уже здесь.</p>
+    <form class="panel" method="post">
+      {% csrf_token %}
+      {% for error in form.non_field_errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+      {% for field in form %}{% include "shop/includes/field.html" %}{% endfor %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="button button-dark full-width">Войти</button>
+    </form>
+    <p class="auth-switch">Еще не зарегистрированы? <a href="{% url 'accounts:register' %}">Регистрация</a></p>
+  </section>
+{% endblock %}

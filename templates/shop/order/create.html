@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load shop_tags %}
+{% block title %}Оформление заказа — Полка{% endblock %}
+{% block content %}
+  <a class="back-link" href="{% url 'shop:cart_detail' %}">← Вернуться в корзину</a>
+  <div class="page-heading"><span class="eyebrow">Последний шаг</span><h1>Оформление заказа</h1></div>
+  <div class="checkout-layout">
+    <form class="panel checkout-form" method="post">
+      {% csrf_token %}
+      {% if not user.is_authenticated %}<p class="soft-note"><a href="{% url 'accounts:login' %}?next={{ request.path }}">Войдите</a>, чтобы сохранить заказ в личном кабинете.</p>{% endif %}
+      {% for error in form.non_field_errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+      <h2>Контакты и доставка</h2>
+      <div class="form-grid">{% for field in form %}{% include "shop/includes/field.html" %}{% endfor %}</div>
+      <p class="muted small-text">Самовывоз: учебный пункт «Полка», Москва, ул. Книжная, 1. При самовывозе адрес и индекс заполнять не нужно.</p>
+      <p class="soft-note">Для СБП способ оплаты сохраняется в заказе. Это учебный магазин: реальный перевод и банковский QR-код не используются.</p>
+      <button class="button button-dark full-width" type="submit">Подтвердить заказ · {{ cart.get_total_price|rubles }}</button>
+    </form>
+    <aside class="panel order-summary">
+      <h2>На вашей полке</h2>
+      {% for item in cart %}<div class="summary-line"><span>{{ item.product.name }} <small class="muted">× {{ item.quantity }}</small></span><strong>{{ item.total_price|rubles }}</strong></div>{% endfor %}
+      {% if cart.get_discount %}<div class="summary-line"><span>Скидка</span><strong>−{{ cart.get_discount|rubles }}</strong></div>{% endif %}
+      <div class="summary-line summary-total"><span>Итого</span><strong>{{ cart.get_total_price|rubles }}</strong></div>
+    </aside>
+  </div>
+{% endblock %}

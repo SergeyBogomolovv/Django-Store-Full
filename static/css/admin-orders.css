@@ -1,0 +1,23 @@
+.admin-order-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  padding: 20px 0;
+}
+.admin-order-card {
+  background: var(--body-bg);
+  border: 1px solid var(--hairline-color);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.admin-order-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 11px;
+}
+.admin-order-card h2 { margin: 20px 0 10px; }
+.admin-order-card p { margin: 10px 0; }
+.admin-order-open { display: block; margin-top: 18px; }
