@@ -17,7 +17,6 @@ class Command(BaseCommand):
         if not password:
             raise CommandError("Задайте DJANGO_SUPERUSER_PASSWORD в .env.")
 
-        # Короткие логин и пароль администратора заданы самим ТЗ.
         user, created = get_user_model().objects.get_or_create(
             username="Lab16",
             defaults={

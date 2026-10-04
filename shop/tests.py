@@ -416,7 +416,7 @@ class ShopTests(TestCase):
                 )
         self.assertTrue(admin.is_superuser)
 
-    def test_other_staff_cannot_enter_classroom_admin(self):
+    def test_other_staff_cannot_enter_admin(self):
         self.other_user.is_staff = True
         self.other_user.is_superuser = True
         self.other_user.save()

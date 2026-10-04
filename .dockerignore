@@ -1,6 +1,7 @@
 .git
 .gitignore
-ТЗ
+**/*.pdf
+**/*.docx
 .env
 .env.*
 !.env.example

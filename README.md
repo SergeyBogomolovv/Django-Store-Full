@@ -16,7 +16,7 @@ docker compose up --build -d
 
 Магазин: http://localhost:8000 · Админка: http://localhost:8000/admin/
 
-Учебный администратор: **Lab16 / Prac4**, как в ТЗ. При первом запуске
+Администратор: **Lab16 / Prac4**. При первом запуске
 автоматически создаются 8 книг и промокоды **POLKA10** (10%) и **BOOK200** (200 ₽).
 Повторный запуск не сбрасывает заказы, остатки и пароль.
 
@@ -24,9 +24,6 @@ docker compose up --build -d
 docker compose logs -f web celery_worker
 docker compose down
 ```
-
-Заказы, база и изображения сохраняются в Docker volumes.
-Команда `docker compose down -v` удаляет эти данные.
 
 ## Локально без Docker
 
@@ -49,31 +46,13 @@ python manage.py runserver
 
 ```sh
 docker compose exec web python manage.py test
-docker compose exec web whoami
-docker compose exec celery_worker whoami
-docker images polka-app
 ```
 
 Без Docker: `python manage.py test`. Тест одновременной покупки последней книги
 работает только на PostgreSQL; остальные проверки выполняются и на SQLite.
 
-Для проверки вручную: зарегистрируйтесь, оформите заказ с промокодом,
-смените его статус на «Завершено» в админке и оставьте отзыв на купленную книгу.
-В админке заказы показаны карточками, есть фильтры, состав и массовые действия.
-
-## Несколько деталей
-
-- `shop/` — товары, корзина, заказы; `accounts/` — пользователи.
-- СБП — выбор способа оплаты без банковской интеграции. Оплату отмечает администратор.
-- Celery отправляет подтверждение заказа в консоль worker, без настоящей почтовой рассылки.
-- Docker использует PostgreSQL, Redis, Gunicorn и nginx. Django и Celery работают
-  под `app` (UID 10001). Именованные тома получают права из образа, без `chmod 777`.
-- PostgreSQL запускается до миграций благодаря healthcheck. Миграции и
-  `collectstatic` выполняет только web при старте: секреты и база не нужны при сборке.
-- Зависимости копируются раньше исходников, поэтому изменения Python не сбрасывают
-  кеш `pip install`. Окончания строк shell-скрипта закреплены через `.gitattributes`.
-- Каталог кешируется на 60 секунд и сбрасывается при сохранении товара или категории.
-- `ТЗ/`, `.env`, базы, медиа и виртуальное окружение исключены из Git и Docker-образа.
+СБП работает без банковской интеграции: оплату отмечает администратор.
+Подтверждения заказов выводятся в консоль Celery worker.
 
 ## Cloudflare (при наличии домена)
 
@@ -90,4 +69,3 @@ docker compose -f docker-compose.yml -f docker-compose.cloudflare.yml up -d
 
 Для `/static/*` и `/media/*` оставьте кеширование с учётом заголовков nginx;
 для остальных путей задайте [Bypass cache](https://developers.cloudflare.com/cache/how-to/cache-rules/settings/).
-Туннель подключает CDN и защиту Cloudflare, не открывая публичный порт origin.
