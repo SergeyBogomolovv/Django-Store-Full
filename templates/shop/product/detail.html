@@ -31,25 +31,7 @@
           Пока нет в наличии
         {% endif %}
       </p>
-      <form class="detail-buy"
-            action="{% url 'shop:cart_add' product.pk %}"
-            method="post"
-            data-cart-add>
-        {% csrf_token %}
-        <label class="visually-hidden" for="quantity">Количество</label>
-        <input id="quantity"
-               type="number"
-               name="quantity"
-               value="1"
-               min="1"
-               max="{{ product.stock }}"
-               {% if not product.stock %}disabled{% endif %}>
-        <button class="button button-dark"
-                {% if not product.stock %}disabled{% endif %}>
-          В корзину
-          <span>+</span>
-        </button>
-      </form>
+      {% include "shop/includes/cart_control.html" with show_quantity=True %}
       <p class="muted small-text">Курьером или самовывозом. Оплата при получении или по СБП.</p>
     </div>
   </section>

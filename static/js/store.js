@@ -48,6 +48,15 @@ document.querySelectorAll("[data-cart-add]").forEach((form) => {
       counter.textContent = data.cart_count;
       counter.classList.remove("bump");
       requestAnimationFrame(() => counter.classList.add("bump"));
+      if (response.ok) {
+        const control = form.closest("[data-cart-product]");
+        document.querySelectorAll("[data-cart-product]").forEach((item) => {
+          if (item.dataset.cartProduct !== control.dataset.cartProduct) return;
+          item.querySelector("[data-cart-add]").hidden = true;
+          item.querySelector("[data-cart-link]").hidden = false;
+        });
+        control.querySelector("[data-cart-link]").focus();
+      }
     } catch {
       showToast("Не удалось связаться с магазином. Попробуйте ещё раз.", true);
     } finally {

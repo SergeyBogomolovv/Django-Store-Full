@@ -41,22 +41,7 @@
     <p class="author">{{ product.author }}</p>
     <div class="product-bottom">
       <strong>{{ product.price|rubles }}</strong>
-      <form action="{% url 'shop:cart_add' product.pk %}"
-            method="post"
-            data-cart-add>
-        {% csrf_token %}
-        <input type="hidden" name="quantity" value="1">
-        <button class="add-button"
-                type="submit"
-                {% if not product.stock %}disabled{% endif %}
-                aria-label="Добавить «{{ product.name }}» в корзину">
-          {% if product.stock %}
-            +
-          {% else %}
-            Нет
-          {% endif %}
-        </button>
-      </form>
+      {% include "shop/includes/cart_control.html" with show_quantity=False %}
     </div>
   </div>
 </article>

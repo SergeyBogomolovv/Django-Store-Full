@@ -1,0 +1,41 @@
+<div class="cart-control{% if show_quantity %} cart-control-detail{% endif %}"
+     data-cart-product="{{ product.pk }}">
+  <form action="{% url 'shop:cart_add' product.pk %}"
+        method="post"
+        {% if show_quantity %}class="detail-buy"{% endif %}
+        data-cart-add
+        {% if product.pk in cart_product_ids %}hidden{% endif %}>
+    {% csrf_token %}
+    {% if show_quantity %}
+      <label class="visually-hidden" for="quantity">Количество</label>
+      <input id="quantity"
+             type="number"
+             name="quantity"
+             value="1"
+             min="1"
+             max="{{ product.stock }}"
+             {% if not product.stock %}disabled{% endif %}>
+    {% else %}
+      <input type="hidden" name="quantity" value="1">
+    {% endif %}
+    <button class="{% if show_quantity %}button button-dark{% else %}add-button{% endif %}"
+            type="submit"
+            {% if not product.stock %}disabled{% endif %}
+            aria-label="Добавить «{{ product.name }}» в корзину">
+      {% if not product.stock %}
+        Нет в наличии
+      {% elif show_quantity %}
+        В корзину <span aria-hidden="true">+</span>
+      {% else %}
+        +
+      {% endif %}
+    </button>
+  </form>
+  <a href="{% url 'shop:cart_detail' %}"
+     class="in-cart-link{% if show_quantity %} button{% endif %}"
+     data-cart-link
+     aria-label="«{{ product.name }}» в корзине — открыть корзину"
+     {% if product.pk not in cart_product_ids %}hidden{% endif %}>
+    <span aria-hidden="true">✓</span> В корзине
+  </a>
+</div>
