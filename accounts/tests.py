@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core.cache import cache
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .forms import RegistrationForm
@@ -7,8 +8,12 @@ from .forms import RegistrationForm
 User = get_user_model()
 
 
+@override_settings(
+    CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+)
 class RegistrationTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.data = {
             "username": "reader123",
             "full_name": "Иванов Иван Иванович",
