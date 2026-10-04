@@ -127,3 +127,9 @@ CELERY_TASK_PUBLISH_RETRY = False
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "Полка <orders@polka.example>"
 SESSION_COOKIE_HTTPONLY = True
+
+# Включается только для HTTPS-маршрута через доверенный nginx / Cloudflare Tunnel.
+if os.environ.get("DJANGO_HTTPS", "0") == "1":
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

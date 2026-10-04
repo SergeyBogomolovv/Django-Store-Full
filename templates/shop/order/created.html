@@ -1,13 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Заказ №{{ order.pk }} — Полка{% endblock %}
+{% block title %}
+  Заказ №{{ order.pk }} — Полка
+{% endblock %}
 {% block content %}
   <section class="success-page">
-    <span class="success-icon">✓</span><span class="eyebrow">Спасибо за выбор</span>
-    <h1>Новая история<br>уже в пути.</h1>
-    <p>Заказ №{{ order.pk }} принят. Статус: <strong>{{ order.get_status_display }}</strong>.</p>
-    <div class="panel text-start">{% include "shop/includes/order_items.html" %}<p class="muted">{{ order.get_delivery_method_display }} · {{ order.delivery_date|date:"d.m.Y" }}<br>{{ order.get_payment_method_display }} · {% if order.paid %}Оплачено{% else %}Ожидает оплаты{% endif %}</p>
-      {% if order.payment_method == "sbp" %}<p class="soft-note">Выбрана оплата по СБП. В учебном магазине перевод не требуется; оплату отмечает администратор.</p>{% endif %}
+    <span class="success-icon">✓</span>
+    <span class="eyebrow">Спасибо за выбор</span>
+    <h1>
+      Новая история
+      <br>
+      уже в пути.
+    </h1>
+    <p>
+      Заказ №{{ order.pk }} принят. Статус:
+      <strong>{{ order.get_status_display }}</strong>
+      .
+    </p>
+    <div class="panel text-start">
+      {% include "shop/includes/order_items.html" %}
+      <p class="muted">
+        {{ order.get_delivery_method_display }} · {{ order.delivery_date|date:"d.m.Y" }}
+        <br>
+        {{ order.get_payment_method_display }} ·
+        {% if order.paid %}
+          Оплачено
+        {% else %}
+          Ожидает оплаты
+        {% endif %}
+      </p>
+      {% if order.payment_method == "sbp" %}
+        <p class="soft-note">
+          Выбрана оплата по СБП. В учебном магазине перевод не требуется; оплату отмечает администратор.
+        </p>
+      {% endif %}
     </div>
-    <div class="success-actions"><a class="button button-dark" href="{% url 'shop:product_list' %}">Вернуться к книгам</a>{% if user.is_authenticated %}<a class="button button-light" href="{% url 'accounts:profile' %}">Мои заказы</a>{% endif %}</div>
+    <div class="success-actions">
+      <a class="button button-dark" href="{% url 'shop:product_list' %}">Вернуться к книгам</a>
+      {% if user.is_authenticated %}
+        <a class="button button-light" href="{% url 'accounts:profile' %}">Мои заказы</a>
+      {% endif %}
+    </div>
   </section>
 {% endblock %}

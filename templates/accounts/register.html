@@ -1,14 +1,29 @@
 {% extends "base.html" %}
-{% block title %}Регистрация — Полка{% endblock %}
+{% block title %}
+  Регистрация — Полка
+{% endblock %}
 {% block content %}
   <section class="auth-page">
-    <span class="eyebrow">Место для ваших историй</span><h1>Своя полка.</h1><p class="muted">Сохраняйте книги и следите за заказами.</p>
-    <form class="panel" method="post" data-registration data-validate-url="{% url 'accounts:validate' %}" novalidate>
+    <span class="eyebrow">Место для ваших историй</span>
+    <h1>Своя полка.</h1>
+    <p class="muted">Сохраняйте книги и следите за заказами.</p>
+    <form class="panel"
+          method="post"
+          data-registration
+          data-validate-url="{% url 'accounts:validate' %}"
+          novalidate>
       {% csrf_token %}
-      {% for error in form.non_field_errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
-      {% for field in form %}{% include "shop/includes/field.html" %}{% endfor %}
+      {% for error in form.non_field_errors %}
+        <p class="form-error" role="alert">{{ error }}</p>
+      {% endfor %}
+      {% for field in form %}
+        {% include "shop/includes/field.html" %}
+      {% endfor %}
       <button class="button button-dark full-width">Создать аккаунт</button>
     </form>
-    <p class="auth-switch">Уже есть аккаунт? <a href="{% url 'accounts:login' %}">Войти</a></p>
+    <p class="auth-switch">
+      Уже есть аккаунт?
+      <a href="{% url 'accounts:login' %}">Войти</a>
+    </p>
   </section>
 {% endblock %}

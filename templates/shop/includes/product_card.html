@@ -1,8 +1,14 @@
 {% load static shop_tags %}
 <article class="product-card">
-  <a class="book-art art-{{ product.category.slug }}" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+  <a class="book-art art-{{ product.category.slug }}"
+     href="{{ product.get_absolute_url }}"
+     tabindex="-1"
+     aria-hidden="true">
     {% if product.image %}
-      <img class="product-photo" src="{{ product.image.url }}" alt="" loading="lazy">
+      <img class="product-photo"
+           src="{{ product.image.url }}"
+           alt=""
+           loading="lazy">
     {% else %}
       <div class="book-cover cover-{{ product.category.slug }}">
         <span class="cover-author">{{ product.author }}</span>
@@ -12,20 +18,44 @@
       </div>
     {% endif %}
   </a>
-  <form class="wishlist-button" action="{% url 'shop:wishlist_toggle' product.pk %}" method="post">
+  <form class="wishlist-button"
+        action="{% url 'shop:wishlist_toggle' product.pk %}"
+        method="post">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
-    <button type="submit" aria-label="{% if product.pk in wishlist_ids %}Убрать из избранного{% else %}В избранное{% endif %}" aria-pressed="{% if product.pk in wishlist_ids %}true{% else %}false{% endif %}">{% if product.pk in wishlist_ids %}♥{% else %}♡{% endif %}</button>
+    <button type="submit"
+            aria-label="{% if product.pk in wishlist_ids %}Убрать из избранного{% else %}В избранное{% endif %}"
+            aria-pressed="{% if product.pk in wishlist_ids %}true{% else %}false{% endif %}">
+      {% if product.pk in wishlist_ids %}
+        ♥
+      {% else %}
+        ♡
+      {% endif %}
+    </button>
   </form>
   <div class="product-info">
     <span class="eyebrow">{{ product.category }}</span>
-    <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+    <h3>
+      <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    </h3>
     <p class="author">{{ product.author }}</p>
     <div class="product-bottom">
       <strong>{{ product.price|rubles }}</strong>
-      <form action="{% url 'shop:cart_add' product.pk %}" method="post" data-cart-add>
-        {% csrf_token %}<input type="hidden" name="quantity" value="1">
-        <button class="add-button" type="submit" {% if not product.stock %}disabled{% endif %} aria-label="Добавить «{{ product.name }}» в корзину">{% if product.stock %}+{% else %}Нет{% endif %}</button>
+      <form action="{% url 'shop:cart_add' product.pk %}"
+            method="post"
+            data-cart-add>
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="1">
+        <button class="add-button"
+                type="submit"
+                {% if not product.stock %}disabled{% endif %}
+                aria-label="Добавить «{{ product.name }}» в корзину">
+          {% if product.stock %}
+            +
+          {% else %}
+            Нет
+          {% endif %}
+        </button>
       </form>
     </div>
   </div>

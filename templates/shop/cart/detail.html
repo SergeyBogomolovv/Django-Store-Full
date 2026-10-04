@@ -1,26 +1,59 @@
 {% extends "base.html" %}
 {% load shop_tags %}
-{% block title %}Корзина — Полка{% endblock %}
+{% block title %}
+  Корзина — Полка
+{% endblock %}
 {% block content %}
-  <div class="page-heading"><span class="eyebrow">Почти на вашей полке</span><h1>Корзина <sup>{{ cart|length }}</sup></h1></div>
+  <div class="page-heading">
+    <span class="eyebrow">Почти на вашей полке</span>
+    <h1>
+      Корзина
+      <sup>
+        {{ cart|length }}
+      </sup>
+    </h1>
+  </div>
   {% if cart %}
     <div class="checkout-layout">
       <div class="cart-items">
         {% for item in cart %}
           <article class="cart-item">
-            <div class="cart-book-icon art-{{ item.product.category.slug }}" aria-hidden="true">▤</div>
-            <div class="cart-item-info"><h2><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h2><p class="muted">{{ item.product.author }}</p><span>{{ item.price|rubles }} / шт.</span>
-              {% if not item.product.available or item.quantity > item.product.stock %}<p class="field-errors">Доступно: {{ item.product.stock }} шт. Измените количество или удалите книгу.</p>{% endif %}
+            <div class="cart-book-icon art-{{ item.product.category.slug }}"
+                 aria-hidden="true">▤</div>
+            <div class="cart-item-info">
+              <h2>
+                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+              </h2>
+              <p class="muted">{{ item.product.author }}</p>
+              <span>{{ item.price|rubles }} / шт.</span>
+              {% if not item.product.available or item.quantity > item.product.stock %}
+                <p class="field-errors">
+                  Доступно: {{ item.product.stock }} шт. Измените количество или удалите книгу.
+                </p>
+              {% endif %}
             </div>
             <div class="cart-item-controls">
               <strong>{{ item.total_price|rubles }}</strong>
-              <form class="quantity-form" action="{% url 'shop:cart_add' item.product.pk %}" method="post">
-                {% csrf_token %}<input type="hidden" name="update" value="1">
-                <label class="visually-hidden" for="quantity-{{ item.product.pk }}">Количество «{{ item.product.name }}»</label>
-                <input id="quantity-{{ item.product.pk }}" type="number" name="quantity" min="1" max="{{ item.product.stock }}" value="{{ item.quantity }}">
+              <form class="quantity-form"
+                    action="{% url 'shop:cart_add' item.product.pk %}"
+                    method="post">
+                {% csrf_token %}
+                <input type="hidden" name="update" value="1">
+                <label class="visually-hidden" for="quantity-{{ item.product.pk }}">
+                  Количество «{{ item.product.name }}»
+                </label>
+                <input id="quantity-{{ item.product.pk }}"
+                       type="number"
+                       name="quantity"
+                       min="1"
+                       max="{{ item.product.stock }}"
+                       value="{{ item.quantity }}">
                 <button class="text-button" type="submit">Обновить</button>
               </form>
-              <form action="{% url 'shop:cart_remove' item.product.pk %}" method="post">{% csrf_token %}<button class="text-button muted" type="submit">Удалить</button></form>
+              <form action="{% url 'shop:cart_remove' item.product.pk %}" method="post">
+                {% csrf_token %}
+                <button class="text-button muted" type="submit">Удалить</button>
+              </form>
             </div>
           </article>
         {% endfor %}
@@ -28,20 +61,62 @@
       </div>
       <aside class="panel order-summary">
         <h2>Ваш заказ</h2>
-        <div class="summary-line"><span>Книги</span><strong>{{ cart.get_subtotal|rubles }}</strong></div>
-        <div class="summary-line"><span>Скидка</span><strong>−{{ cart.get_discount|rubles }}</strong></div>
-        <div class="summary-line summary-total"><span>Итого</span><strong>{{ cart.get_total_price|rubles }}</strong></div>
-        <form class="coupon-form" action="{% url 'shop:coupon_apply' %}" method="post">
-          {% csrf_token %}<label for="coupon">Промокод</label><div><input id="coupon" name="code" maxlength="30" placeholder="Например, POLKA10" required><button class="button button-light" type="submit" aria-label="Применить промокод">→</button></div>
+        <div class="summary-line">
+          <span>Книги</span>
+          <strong>{{ cart.get_subtotal|rubles }}</strong>
+        </div>
+        <div class="summary-line">
+          <span>Скидка</span>
+          <strong>−{{ cart.get_discount|rubles }}</strong>
+        </div>
+        <div class="summary-line summary-total">
+          <span>Итого</span>
+          <strong>{{ cart.get_total_price|rubles }}</strong>
+        </div>
+        <form class="coupon-form"
+              action="{% url 'shop:coupon_apply' %}"
+              method="post">
+          {% csrf_token %}
+          <label for="coupon">Промокод</label>
+          <div>
+            <input id="coupon"
+                   name="code"
+                   maxlength="30"
+                   placeholder="Например, POLKA10"
+                   required>
+            <button class="button button-light"
+                    type="submit"
+                    aria-label="Применить промокод">→</button>
+          </div>
         </form>
         {% if request.session.coupon_code %}
-          <form class="applied-coupon" action="{% url 'shop:coupon_remove' %}" method="post">{% csrf_token %}<span>{{ request.session.coupon_code }}{% if not cart.get_coupon %} · истёк{% endif %}</span><button class="text-button" type="submit">Убрать</button></form>
+          <form class="applied-coupon"
+                action="{% url 'shop:coupon_remove' %}"
+                method="post">
+            {% csrf_token %}
+            <span>
+              {{ request.session.coupon_code }}
+              {% if not cart.get_coupon %}
+                · истёк
+              {% endif %}
+            </span>
+            <button class="text-button" type="submit">Убрать</button>
+          </form>
         {% endif %}
-        <a class="button button-dark full-width" href="{% url 'shop:order_create' %}">Оформить заказ <span>↗</span></a>
+        <a class="button button-dark full-width"
+           href="{% url 'shop:order_create' %}">
+          Оформить заказ
+          <span>↗</span>
+        </a>
         <p class="muted small-text">В учебном магазине доставка бесплатная.</p>
       </aside>
     </div>
   {% else %}
-    <div class="empty-state"><span class="empty-symbol">▤</span><h2>Книги ждут вас в каталоге</h2><p>Добавьте что-нибудь для себя или в подарок.</p><a class="button button-dark" href="{% url 'shop:product_list' %}">Выбрать книгу ↗</a></div>
+    <div class="empty-state">
+      <span class="empty-symbol">▤</span>
+      <h2>Книги ждут вас в каталоге</h2>
+      <p>Добавьте что-нибудь для себя или в подарок.</p>
+      <a class="button button-dark" href="{% url 'shop:product_list' %}">Выбрать книгу ↗</a>
+    </div>
   {% endif %}
 {% endblock %}

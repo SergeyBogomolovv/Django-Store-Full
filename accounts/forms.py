@@ -5,6 +5,13 @@ from .models import User
 
 
 class RegistrationForm(UserCreationForm):
+    password1 = forms.CharField(
+        label="Пароль",
+        min_length=8,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+        help_text="Не менее 8 символов.",
+    )
+
     class Meta:
         model = User
         fields = ["username", "full_name", "phone", "email", "password1", "password2"]

@@ -10,3 +10,12 @@ class StoreUserAdmin(UserAdmin):
         ("Данные покупателя", {"fields": ("full_name", "phone")}),
     )
     list_display = ("username", "full_name", "email", "phone", "is_staff")
+
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ("Данные покупателя", {"fields": ("email", "full_name", "phone")}),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.username == "Lab16":
+            return ("username",)
+        return ()

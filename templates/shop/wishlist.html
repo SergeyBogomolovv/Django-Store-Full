@@ -1,6 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Избранное — Полка{% endblock %}
+{% block title %}
+  Избранное — Полка
+{% endblock %}
 {% block content %}
-  <div class="page-heading"><span class="eyebrow">Прочитать однажды</span><h1>Избранное <sup>{{ products|length }}</sup></h1><p class="muted">Книги, которые хочется держать поближе.</p></div>
-  <div class="product-grid">{% for product in products %}{% include "shop/includes/product_card.html" %}{% empty %}<div class="empty-state"><h2>Сохраните что-нибудь на потом</h2><p>Нажмите на сердечко у понравившейся книги.</p><a class="button button-dark" href="{% url 'shop:product_list' %}">Найти свою книгу</a></div>{% endfor %}</div>
+  <div class="page-heading">
+    <span class="eyebrow">Прочитать однажды</span>
+    <h1>
+      Избранное
+      <sup>
+        {{ products|length }}
+      </sup>
+    </h1>
+    <p class="muted">Книги, которые хочется держать поближе.</p>
+  </div>
+  <div class="product-grid">
+    {% for product in products %}
+      {% include "shop/includes/product_card.html" %}
+    {% empty %}
+      <div class="empty-state">
+        <h2>Сохраните что-нибудь на потом</h2>
+        <p>Нажмите на сердечко у понравившейся книги.</p>
+        <a class="button button-dark" href="{% url 'shop:product_list' %}">Найти свою книгу</a>
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db import IntegrityError
+from django.db import connection
 from django.db.models import Avg, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -29,6 +29,25 @@ def wishlist_ids(request):
     return set(request.user.wishlist.values_list("product_id", flat=True))
 
 
+def search_products(products, query):
+    filters = (
+        Q(name__icontains=query)
+        | Q(description__icontains=query)
+        | Q(author__icontains=query)
+    )
+    if connection.vendor == "sqlite":
+        # SQLite LIKE не различает регистр только для латиницы.
+        # Для небольшого локального каталога дополняем поиск через casefold.
+        matching_ids = [
+            product.pk
+            for product in products
+            if query.casefold()
+            in " ".join([product.name, product.description, product.author]).casefold()
+        ]
+        filters |= Q(pk__in=matching_ids)
+    return products.filter(filters)
+
+
 def product_list(request, category_slug=None):
     category = (
         get_object_or_404(Category, slug=category_slug) if category_slug else None
@@ -45,11 +64,7 @@ def product_list(request, category_slug=None):
     if form.is_valid():
         data = form.cleaned_data
         if data["q"]:
-            products = products.filter(
-                Q(name__icontains=data["q"])
-                | Q(description__icontains=data["q"])
-                | Q(author__icontains=data["q"])
-            )
+            products = search_products(products, data["q"])
         if data["min_price"] is not None:
             products = products.filter(price__gte=data["min_price"])
         if data["max_price"] is not None:
@@ -231,14 +246,13 @@ def review_add(request, product_id):
         return redirect(product)
     form = ReviewForm(request.POST)
     if form.is_valid():
-        try:
-            Review.objects.create(
-                product=product, user=request.user, **form.cleaned_data
-            )
-        except IntegrityError:
-            messages.info(request, "Вы уже оставили отзыв на эту книгу.")
-        else:
+        _, created = Review.objects.get_or_create(
+            product=product, user=request.user, defaults=form.cleaned_data
+        )
+        if created:
             messages.success(request, "Спасибо за ваш отзыв!")
+        else:
+            messages.info(request, "Вы уже оставили отзыв на эту книгу.")
     else:
         for errors in form.errors.values():
             messages.error(request, errors[0])

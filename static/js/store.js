@@ -38,7 +38,9 @@ document.querySelectorAll("[data-cart-add]").forEach((form) => {
       const response = await fetch(form.action, {
         method: "POST",
         body: new FormData(form),
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json"
+        },
       });
       const data = await response.json();
       showToast(data.message, !response.ok);
@@ -85,7 +87,9 @@ if (registration) {
         const errors = document.getElementById(field.id + "-errors");
         const messages = data.errors[name] || [];
         errors.replaceChildren();
-        messages.forEach(({ message }) => {
+        messages.forEach(({
+          message
+        }) => {
           const text = document.createElement("span");
           text.textContent = message;
           errors.append(text);

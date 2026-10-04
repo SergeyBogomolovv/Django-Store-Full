@@ -1,55 +1,101 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f2e9">
-  <title>{% block title %}Полка — книжный магазин{% endblock %}</title>
-  <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="{% static 'css/store.css' %}" rel="stylesheet">
-  <script src="{% static 'js/store.js' %}" defer></script>
-</head>
-<body>
-  <a class="skip-link" href="#main">К содержимому</a>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="{% url 'shop:product_list' %}" aria-label="Полка — главная">
-        <img src="{% static 'img/logo.svg' %}" width="32" height="32" alt=""> полка<span>®</span>
-      </a>
-      <nav class="desktop-nav" aria-label="Основная навигация">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f2e9">
+    <title>
+      {% block title %}
+        Полка — книжный магазин
+      {% endblock %}
+    </title>
+    <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="{% static 'css/store.css' %}" rel="stylesheet">
+    <script src="{% static 'js/store.js' %}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">К содержимому</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand"
+           href="{% url 'shop:product_list' %}"
+           aria-label="Полка — главная">
+          <img src="{% static 'img/logo.svg' %}" width="32" height="32" alt="">
+          полка
+          <span>®</span>
+        </a>
+        <nav class="desktop-nav" aria-label="Основная навигация">
+          <a href="{% url 'shop:product_list' %}">Каталог</a>
+          <a href="{% url 'shop:wishlist' %}">Избранное</a>
+        </nav>
+        <form class="header-search"
+              action="{% url 'shop:product_list' %}"
+              method="get"
+              role="search">
+          <label class="visually-hidden" for="site-search">Найти книгу</label>
+          <input id="site-search"
+                 type="search"
+                 name="q"
+                 value="{{ request.GET.q }}"
+                 placeholder="Название, автор, что-то интересное"
+                 maxlength="200">
+          <button type="submit" aria-label="Найти">⌕</button>
+        </form>
+        <div class="header-actions">
+          <a class="account-link" href="{% url 'accounts:profile' %}">
+            {% if user.is_authenticated %}
+              Кабинет
+            {% else %}
+              Войти
+            {% endif %}
+          </a>
+          <a class="cart-link" href="{% url 'shop:cart_detail' %}">
+            Корзина
+            <span id="cart-count">{{ cart_count }}</span>
+          </a>
+          <button class="menu-toggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="mobile-menu"
+                  aria-label="Открыть меню">☰</button>
+        </div>
+      </div>
+      <nav id="mobile-menu"
+           class="mobile-menu"
+           aria-label="Мобильная навигация"
+           hidden>
         <a href="{% url 'shop:product_list' %}">Каталог</a>
         <a href="{% url 'shop:wishlist' %}">Избранное</a>
+        <a href="{% url 'accounts:profile' %}">Личный кабинет</a>
       </nav>
-      <form class="header-search" action="{% url 'shop:product_list' %}" method="get" role="search">
-        <label class="visually-hidden" for="site-search">Найти книгу</label>
-        <input id="site-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="Название, автор, что-то интересное" maxlength="200">
-        <button type="submit" aria-label="Найти">⌕</button>
-      </form>
-      <div class="header-actions">
-        <a class="account-link" href="{% url 'accounts:profile' %}">
-          {% if user.is_authenticated %}Кабинет{% else %}Войти{% endif %}
-        </a>
-        <a class="cart-link" href="{% url 'shop:cart_detail' %}">Корзина <span id="cart-count">{{ cart_count }}</span></a>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню">☰</button>
-      </div>
+    </header>
+    <div class="toast-region" aria-live="polite" aria-atomic="true">
+      {% for message in messages %}
+        <div class="store-toast {{ message.tags }}" role="status">
+          {{ message }}
+          <button type="button" aria-label="Закрыть">×</button>
+        </div>
+      {% endfor %}
     </div>
-    <nav id="mobile-menu" class="mobile-menu" aria-label="Мобильная навигация" hidden>
-      <a href="{% url 'shop:product_list' %}">Каталог</a>
-      <a href="{% url 'shop:wishlist' %}">Избранное</a>
-      <a href="{% url 'accounts:profile' %}">Личный кабинет</a>
-    </nav>
-  </header>
-  <div class="toast-region" aria-live="polite" aria-atomic="true">
-    {% for message in messages %}
-      <div class="store-toast {{ message.tags }}" role="status">{{ message }}<button type="button" aria-label="Закрыть">×</button></div>
-    {% endfor %}
-  </div>
-  <main id="main" class="page-shell">{% block content %}{% endblock %}</main>
-  <footer class="site-footer">
-    <div><a class="brand" href="{% url 'shop:product_list' %}">полка<span>®</span></a><p>Хорошие книги. В своём темпе.</p></div>
-    <div><span class="eyebrow">На связи</span><a href="mailto:hello@polka.example">hello@polka.example</a><small>Учебный магазин · заказы демонстрационные</small></div>
-  </footer>
-</body>
+    <main id="main" class="page-shell">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="{% url 'shop:product_list' %}">
+          полка
+          <span>®</span>
+        </a>
+        <p>Хорошие книги. В своём темпе.</p>
+      </div>
+      <div>
+        <span class="eyebrow">На связи</span>
+        <a href="mailto:hello@polka.example">hello@polka.example</a>
+        <small>Учебный магазин · заказы демонстрационные</small>
+      </div>
+    </footer>
+  </body>
 </html>

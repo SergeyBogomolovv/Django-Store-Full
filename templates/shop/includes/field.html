@@ -1,8 +1,19 @@
 <div class="field" data-field="{{ field.name }}">
-  <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark"> *</span>{% endif %}</label>
+  <label for="{{ field.id_for_label }}">
+    {{ field.label }}
+    {% if field.field.required %}
+      <span class="required-mark">*</span>
+    {% endif %}
+  </label>
   {{ field }}
-  {% if field.help_text %}<div class="field-help">{{ field.help_text|safe }}</div>{% endif %}
-  <div class="field-errors" id="{{ field.id_for_label }}-errors" aria-live="polite">
-    {% for error in field.errors %}<span>{{ error }}</span>{% endfor %}
+  {% if field.help_text %}
+    <div class="field-help">{{ field.help_text|safe }}</div>
+  {% endif %}
+  <div class="field-errors"
+       id="{{ field.id_for_label }}-errors"
+       aria-live="polite">
+    {% for error in field.errors %}
+      <span>{{ error }}</span>
+    {% endfor %}
   </div>
 </div>

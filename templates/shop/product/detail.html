@@ -1,44 +1,99 @@
 {% extends "base.html" %}
 {% load shop_tags %}
-{% block title %}{{ product.name }} — Полка{% endblock %}
+{% block title %}
+  {{ product.name }} — Полка
+{% endblock %}
 {% block content %}
-  <nav class="breadcrumbs" aria-label="Путь"><a href="{% url 'shop:product_list' %}">Каталог</a><span>/</span><a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a></nav>
+  <nav class="breadcrumbs" aria-label="Путь">
+    <a href="{% url 'shop:product_list' %}">Каталог</a>
+    <span>/</span>
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a>
+  </nav>
   <section class="product-detail">
     <div class="detail-visual">{% include "shop/includes/product_card.html" %}</div>
     <div class="detail-copy">
       <span class="eyebrow">{{ product.category }}</span>
-      <h1>{{ product.name }}</h1><p class="detail-author">{{ product.author }}</p>
-      {% if average_rating %}<p class="rating">★ {{ average_rating|floatformat:1 }} <span class="muted">· {{ reviews|length }} отзывов</span></p>{% endif %}
+      <h1>{{ product.name }}</h1>
+      <p class="detail-author">{{ product.author }}</p>
+      {% if average_rating %}
+        <p class="rating">
+          ★ {{ average_rating|floatformat:1 }}
+          <span class="muted">· {{ reviews|length }} отзывов</span>
+        </p>
+      {% endif %}
       <div class="description">{{ product.description|linebreaks }}</div>
       <p class="detail-price">{{ product.price|rubles }}</p>
-      <p class="stock-label">{% if product.stock %}<span class="little-dot"></span> В наличии: {{ product.stock }} шт.{% else %}Пока нет в наличии{% endif %}</p>
-      <form class="detail-buy" action="{% url 'shop:cart_add' product.pk %}" method="post" data-cart-add>
+      <p class="stock-label">
+        {% if product.stock %}
+          <span class="little-dot"></span>
+          В наличии: {{ product.stock }} шт.
+        {% else %}
+          Пока нет в наличии
+        {% endif %}
+      </p>
+      <form class="detail-buy"
+            action="{% url 'shop:cart_add' product.pk %}"
+            method="post"
+            data-cart-add>
         {% csrf_token %}
         <label class="visually-hidden" for="quantity">Количество</label>
-        <input id="quantity" type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" {% if not product.stock %}disabled{% endif %}>
-        <button class="button button-dark" {% if not product.stock %}disabled{% endif %}>В корзину <span>+</span></button>
+        <input id="quantity"
+               type="number"
+               name="quantity"
+               value="1"
+               min="1"
+               max="{{ product.stock }}"
+               {% if not product.stock %}disabled{% endif %}>
+        <button class="button button-dark"
+                {% if not product.stock %}disabled{% endif %}>
+          В корзину
+          <span>+</span>
+        </button>
       </form>
       <p class="muted small-text">Курьером или самовывозом. Оплата при получении или по СБП.</p>
     </div>
   </section>
   <section class="reviews-section">
-    <div class="section-heading"><h2>Мнения читателей <sup>{{ reviews|length }}</sup></h2></div>
+    <div class="section-heading">
+      <h2>
+        Мнения читателей
+        <sup>
+          {{ reviews|length }}
+        </sup>
+      </h2>
+    </div>
     <div class="reviews-layout">
       <div>
         {% for review in reviews %}
-          <article class="review-card"><div><strong>{{ review.user.full_name|default:review.user.username }}</strong><span class="rating">★ {{ review.rating }}/5</span></div><p>{{ review.comment|linebreaksbr }}</p><small class="muted">{{ review.created_at|date:"d.m.Y" }}</small></article>
-        {% empty %}<p class="muted">Здесь пока тихо. Ваш отзыв может стать первым.</p>{% endfor %}
+          <article class="review-card">
+            <div>
+              <strong>{{ review.user.full_name|default:review.user.username }}</strong>
+              <span class="rating">★ {{ review.rating }}/5</span>
+            </div>
+            <p>{{ review.comment|linebreaksbr }}</p>
+            <small class="muted">{{ review.created_at|date:"d.m.Y" }}</small>
+          </article>
+        {% empty %}
+          <p class="muted">Здесь пока тихо. Ваш отзыв может стать первым.</p>
+        {% endfor %}
       </div>
       <aside class="panel">
         {% if can_review %}
           <h3>Как вам книга?</h3>
           <form action="{% url 'shop:review_add' product.pk %}" method="post">
             {% csrf_token %}
-            {% for field in review_form %}{% include "shop/includes/field.html" %}{% endfor %}
+            {% for field in review_form %}
+              {% include "shop/includes/field.html" %}
+            {% endfor %}
             <button class="button button-dark">Оставить отзыв</button>
           </form>
-        {% elif has_review %}<h3>Спасибо за отзыв</h3><p>Ваше мнение поможет другим читателям.</p>
-        {% else %}<h3>Сначала прочитать</h3><p>Отзыв можно оставить после покупки, когда заказ получит статус «Завершено».</p>{% endif %}
+        {% elif has_review %}
+          <h3>Спасибо за отзыв</h3>
+          <p>Ваше мнение поможет другим читателям.</p>
+        {% else %}
+          <h3>Сначала прочитать</h3>
+          <p>Отзыв можно оставить после покупки, когда заказ получит статус «Завершено».</p>
+        {% endif %}
       </aside>
     </div>
   </section>

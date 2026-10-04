@@ -1,8 +1,22 @@
 {% load shop_tags %}
 <div class="order-items">
   {% for item in order.items.all %}
-    <div class="summary-line"><span><a href="{{ item.product.get_absolute_url }}">{{ item.product_name }}</a> <small class="muted">× {{ item.quantity }}</small></span><strong>{{ item.get_cost|rubles }}</strong></div>
+    <div class="summary-line">
+      <span>
+        <a href="{{ item.product.get_absolute_url }}">{{ item.product_name }}</a>
+        <small class="muted">× {{ item.quantity }}</small>
+      </span>
+      <strong>{{ item.get_cost|rubles }}</strong>
+    </div>
   {% endfor %}
-  {% if order.discount %}<div class="summary-line"><span>Скидка {{ order.coupon_code }}</span><strong>−{{ order.discount|rubles }}</strong></div>{% endif %}
-  <div class="summary-line summary-total"><span>Итого</span><strong>{{ order.get_total_cost|rubles }}</strong></div>
+  {% if order.discount %}
+    <div class="summary-line">
+      <span>Скидка {{ order.coupon_code }}</span>
+      <strong>−{{ order.discount|rubles }}</strong>
+    </div>
+  {% endif %}
+  <div class="summary-line summary-total">
+    <span>Итого</span>
+    <strong>{{ order.get_total_cost|rubles }}</strong>
+  </div>
 </div>

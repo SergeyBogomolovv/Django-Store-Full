@@ -9,9 +9,10 @@ from .models import Coupon, Product
 class Cart:
     def __init__(self, request):
         self.session = request.session
-        self.cart = self.session.setdefault(settings.CART_SESSION_ID, {})
+        self.cart = self.session.get(settings.CART_SESSION_ID, {})
 
     def save(self):
+        self.session[settings.CART_SESSION_ID] = self.cart
         self.session.modified = True
 
     def add(self, product, quantity=1, update=False):
@@ -67,4 +68,4 @@ class Cart:
         self.cart = {}
         self.session.pop(settings.CART_SESSION_ID, None)
         self.session.pop("coupon_code", None)
-        self.save()
+        self.session.modified = True
